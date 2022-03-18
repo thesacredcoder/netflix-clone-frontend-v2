@@ -1,14 +1,35 @@
+import { useEffect, useState } from "react";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 import "./Featured.scss";
+import API from "../../api";
 
 export default function Featured({ type }) {
+  const [content, setContent] = useState({});
+
+  useEffect(() => {
+    const getRandomContent = async () => {
+      try {
+        const { data } = await API.get(`/movies/random?${type}`, {
+          headers: {
+            token:
+              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYyMzQ4NDFlYThhOWJiYzJmYzRkZjEyZCIsImFkbWluIjpmYWxzZSwiaWF0IjoxNjQ3NjA4OTU2LCJleHAiOjE2NDgwNDA5NTZ9.1CcX93i6Q2EBCFpXdBrOY-RdYwdOJJGb2uIGhCJNGJs",
+          },
+        });
+        setContent(data[0]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getRandomContent();
+  }, [type]);
   return (
     <div className="featured">
       {type && (
         <div className="category">
-          <span>{type === "movie" ? "Movies" : "Series"}</span>
+          <span>{type === "movies" ? "Movies" : "Series"}</span>
           <select name="genre" id="genre">
             <option>Genre</option>
             <option value="adventure">Adventure</option>
@@ -26,19 +47,10 @@ export default function Featured({ type }) {
           </select>
         </div>
       )}
-      <img
-        width="100%"
-        src="https://images.pexels.com/photos/6899260/pexels-photo-6899260.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-        alt=""
-      />
+      <img width="100%" src={content.img} alt="" />
       <div className="info">
-        <img src="" alt="" />
-        <span className="desc">
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptate
-          provident iusto molestias nostrum nihil officia sequi, illo dolores
-          esse odio architecto minus! Dolorum reiciendis doloremque voluptates
-          quae iste quam beatae!
-        </span>
+        <img src={content.imgTitle} alt="" />
+        <span className="desc">{content.desc}</span>
         <div className="buttons">
           <button className="play">
             <PlayArrowIcon />
